@@ -20,4 +20,12 @@ public class Bullet : MonoBehaviour
         if (!isLeft)
             transform.position += transform.right * speed * Time.deltaTime;
     }
+    public void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.transform.tag == "Box")
+        {
+            collision.GetComponent<Box>().Open();
+            Destroy(gameObject);
+        }
+    }
 }

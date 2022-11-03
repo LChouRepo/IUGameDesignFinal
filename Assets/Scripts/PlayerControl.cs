@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public enum CharacterEnum
-{ 
+{
     Sword,
-    Master
+    Master,
+    Axe
 }
 
 public class PlayerControl : MonoBehaviour
@@ -13,11 +15,11 @@ public class PlayerControl : MonoBehaviour
     public CharacterEnum characterEnum;
     private Rigidbody2D rig;
     public float speed = 1;
-    public float jumpPower= 10;
+    public float jumpPower = 10;
     private float maxY = 1;
-    [SerializeField]private float minY = 1;
+    [SerializeField] private float minY = 1;
     private float currY = 1;
-    [SerializeField]private Animator animator;
+    [SerializeField] private Animator animator;
     public GameObject Weapon;
     private bool isAttack = true;
     private Vector3 initWeaponPlace;
@@ -27,13 +29,18 @@ public class PlayerControl : MonoBehaviour
 
     public Transform shootPlace;
     public GameObject bullet;
+    public GameObject Axe;
     private AudioSource music;
+    private float Jumpcd = 0.2f;
+    private Coin coinData;
+
     // Start is called before the first frame update
     void Start()
     {
-        music=GetComponent<AudioSource>();
+        coinData = (Coin)Resources.Load("Data/Coin");
+        music = GetComponent<AudioSource>();
         initWeaponPlace = Weapon.transform.localPosition;
-        initWeaponRota= Weapon.transform.eulerAngles;
+        initWeaponRota = Weapon.transform.eulerAngles;
         animator = GetComponentInChildren<Animator>();
         maxY = transform.localScale.y;
         rig = GetComponent<Rigidbody2D>();
@@ -60,39 +67,44 @@ public class PlayerControl : MonoBehaviour
         }
         else
             animator.SetBool("walk", false);
-
+        Jumpcd -= Time.deltaTime;
         if (Input.GetKeyDown(KeyCode.D))
         {
             currY = minY;
-            rig.AddForce(transform.up * jumpPower, ForceMode2D.Force);
+            if (Jumpcd <= 0)
+            {
+                Jumpcd = 0.2f;
+                rig.velocity = Vector2.zero;
+                rig.AddForce(transform.up.normalized * jumpPower, ForceMode2D.Impulse);
+            }
         }
         if (currY < maxY)
         {
             currY += Time.deltaTime;
             transform.localScale = new Vector3(transform.localScale.x, currY, transform.localScale.z);
         }
-        else if(currY>maxY)
+        else if (currY > maxY)
         {
             currY = maxY;
             transform.localScale = new Vector3(transform.localScale.x, currY, transform.localScale.z);
         }
-        if (Input.GetKeyDown(KeyCode.F)&& isAttack)
+        if (Input.GetKeyDown(KeyCode.F) && isAttack)
         {
             if (Input.GetKey(KeyCode.UpArrow))
             {
                 Weapon.transform.position = UpAttackPlace.position;
-                Weapon.transform.rotation= UpAttackPlace.rotation;
-                
+                Weapon.transform.rotation = UpAttackPlace.rotation;
+
             }
             else if (Input.GetKey(KeyCode.DownArrow))
             {
                 Weapon.transform.position = DownAttackPlace.position;
-                Weapon.transform.rotation= DownAttackPlace.rotation;
+                Weapon.transform.rotation = DownAttackPlace.rotation;
             }
             else
             {
                 Weapon.transform.localPosition = initWeaponPlace;
-                Weapon.transform.eulerAngles= initWeaponRota;
+                Weapon.transform.eulerAngles = initWeaponRota;
             }
             Weapon.SetActive(true);
             isAttack = false;
@@ -102,9 +114,17 @@ public class PlayerControl : MonoBehaviour
                 case CharacterEnum.Sword:
                     break;
                 case CharacterEnum.Master:
-                    Bullet bulletScript=  Instantiate(bullet, shootPlace.position,shootPlace.rotation).GetComponent<Bullet>();
+                    Bullet bulletScript = Instantiate(bullet, shootPlace.position, shootPlace.rotation).GetComponent<Bullet>();
                     if (transform.localScale.x < 0)
                         bulletScript.isLeft = true;
+                    break;
+                case CharacterEnum.Axe:
+                    if (FlyAxe.Instance == null)
+                    {
+                        Instantiate(Axe, shootPlace.position, shootPlace.rotation).GetComponent<FlyAxe>();
+                        if (transform.localScale.x < 0)
+                            FlyAxe.Instance.isLeft = true;
+                    }   
                     break;
                 default:
                     break;
@@ -112,10 +132,21 @@ public class PlayerControl : MonoBehaviour
         }
     }
 
-    public void ReadyAttack() 
+    public void ReadyAttack()
     {
         Weapon.SetActive(false);
         isAttack = true;
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.transform.tag == "Coins")
+        {
+            coinData.coin += 10;
+            UIManager.Instance.UpdateCoinsText(coinData.coin);
+            Destroy(collision.gameObject);
+        }
+      
     }
 
 }

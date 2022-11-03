@@ -596,7 +596,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   characterEnum: 1
   speed: 2
-  jumpPower: 200
+  jumpPower: 5
   minY: 0.7
   animator: {fileID: 0}
   Weapon: {fileID: 302113656235155485}
