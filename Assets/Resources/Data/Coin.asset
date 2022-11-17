@@ -12,4 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc6a967088ccfa847be73f349429984f, type: 3}
   m_Name: Coin
   m_EditorClassIdentifier: 
-  coin: 100
+  coin: 0
+  isHave: 01000000
+  SceneInt: 0600000006000000010000000400000003000000050000000500000001000000
+  currScene: 1
+  isNext: 1

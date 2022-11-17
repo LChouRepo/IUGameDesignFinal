@@ -604,6 +604,9 @@ MonoBehaviour:
   DownAttackPlace: {fileID: 302113657986232382}
   shootPlace: {fileID: 302113656235155484}
   bullet: {fileID: 2325709732578083951, guid: d850eb282442e234b819535c08ae515d, type: 3}
+  Axe: {fileID: 0}
+  attackHurt: 1
+  playerMessage: {fileID: 11400000, guid: 811346d27dfa65c4bbf6bab50b6b8163, type: 2}
 --- !u!82 &6343629652044004914
 AudioSource:
   m_ObjectHideFlags: 0

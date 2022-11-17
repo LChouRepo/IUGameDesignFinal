@@ -247,6 +247,8 @@ MonoBehaviour:
   shootPlace: {fileID: 0}
   bullet: {fileID: 0}
   Axe: {fileID: 0}
+  attackHurt: 1
+  playerMessage: {fileID: 11400000, guid: 811346d27dfa65c4bbf6bab50b6b8163, type: 2}
 --- !u!82 &5329133166463615780
 AudioSource:
   m_ObjectHideFlags: 0

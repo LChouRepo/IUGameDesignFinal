@@ -7,11 +7,13 @@ public enum CharacterEnum
 {
     Sword,
     Master,
-    Axe
+    Axe,
+    Bomb
 }
 
 public class PlayerControl : MonoBehaviour
 {
+    private int hp = 5;
     public CharacterEnum characterEnum;
     private Rigidbody2D rig;
     public float speed = 1;
@@ -33,10 +35,19 @@ public class PlayerControl : MonoBehaviour
     private AudioSource music;
     private float Jumpcd = 0.2f;
     private Coin coinData;
+    private bool isDied;
+    public int attackHurt=1;
+    public static PlayerControl Instance;
+    public PlayerMessage playerMessage;
+    public void Awake()
+    {
+        Instance = this;
+    }
 
     // Start is called before the first frame update
     void Start()
     {
+        hp=playerMessage.hp ;
         coinData = (Coin)Resources.Load("Data/Coin");
         music = GetComponent<AudioSource>();
         initWeaponPlace = Weapon.transform.localPosition;
@@ -44,11 +55,15 @@ public class PlayerControl : MonoBehaviour
         animator = GetComponentInChildren<Animator>();
         maxY = transform.localScale.y;
         rig = GetComponent<Rigidbody2D>();
+        ScoreShowUI.Instance.HPText.text = "HP:" + hp;
+
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (isDied)
+            return;
         if (Input.GetKey(KeyCode.RightArrow))
         {
             animator.SetBool("walk", true);
@@ -124,7 +139,14 @@ public class PlayerControl : MonoBehaviour
                         Instantiate(Axe, shootPlace.position, shootPlace.rotation).GetComponent<FlyAxe>();
                         if (transform.localScale.x < 0)
                             FlyAxe.Instance.isLeft = true;
-                    }   
+                    }
+                    break;
+                case CharacterEnum.Bomb:
+                    Bomb bomb= Instantiate(Axe, shootPlace.position, shootPlace.rotation).GetComponent<Bomb>();
+                    if (transform.localScale.x < 0)
+                    {
+                        bomb.power = -bomb.power;
+                    }
                     break;
                 default:
                     break;
@@ -146,7 +168,25 @@ public class PlayerControl : MonoBehaviour
             UIManager.Instance.UpdateCoinsText(coinData.coin);
             Destroy(collision.gameObject);
         }
-      
+    }
+
+    public void Damage(int value)
+    {
+        playerMessage.hp -= value;
+        ScoreShowUI.Instance.HPText.text = "HP:" + playerMessage.hp;
+        rig.AddForce(transform.up.normalized * 3, ForceMode2D.Impulse);
+
+        if (playerMessage.hp <= 0)
+        {
+            playerMessage.hp = 5;
+            ScoreShowUI.Instance.HPText.text = "HP:" + playerMessage.hp;
+            isDied = true;
+            Invoke("ReHome", 1f);
+        }
+    }
+    public void ReHome()
+    {
+        SceneManager.LoadScene(0);
     }
 
 }

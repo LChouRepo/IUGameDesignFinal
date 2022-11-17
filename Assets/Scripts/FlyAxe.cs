@@ -51,6 +51,12 @@ public class FlyAxe : MonoBehaviour
         {
             collision.GetComponent<Box>().Open();
         }
+
+        if (collision.transform.tag == "Enemy")
+        {
+            collision.GetComponent<EnemyManager>().Damage(PlayerControl.Instance.attackHurt);
+        }
+
         else if(collision.transform.tag != "Player"&& collision.transform.tag != "Door" && collision.transform.tag != "Coins")
         {
             isBack = true;

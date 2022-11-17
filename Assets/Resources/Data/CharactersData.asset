@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e7ce3b628b3b1d4ebbf25648aa97f7c, type: 3}
   m_Name: CharactersData
   m_EditorClassIdentifier: 
-  isHave: 010000
+  isHave: 01000000

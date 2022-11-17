@@ -27,5 +27,10 @@ public class Bullet : MonoBehaviour
             collision.GetComponent<Box>().Open();
             Destroy(gameObject);
         }
+        if (collision.transform.tag == "Enemy")
+        {
+            collision.GetComponent<EnemyManager>().Damage(PlayerControl.Instance.attackHurt);
+            Destroy(gameObject);
+        }
     }
 }

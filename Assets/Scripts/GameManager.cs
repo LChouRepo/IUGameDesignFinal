@@ -7,12 +7,18 @@ public class GameManager : MonoBehaviour
 {
     public GameObject[] character;
     public Transform createPlace;
-    private Coin coin;
+    public Transform createPlace02;
+
+
+    public Coin coin;
+
     // Start is called before the first frame update
     void Awake()
     {
-        coin = (Coin)Resources.Load("Data/Coin");
-        Instantiate(character[SelectCharacter.currCharacter], createPlace.position,createPlace.rotation);
+        if (coin.isNext)
+            Instantiate(character[SelectCharacter.currCharacter], createPlace.position, createPlace.rotation);
+        else
+            Instantiate(character[SelectCharacter.currCharacter], createPlace02.position, createPlace02.rotation);
     }
 
     // Update is called once per frame

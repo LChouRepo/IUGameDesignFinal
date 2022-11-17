@@ -5,4 +5,8 @@ using UnityEngine;
 public class Coin : ScriptableObject
 {
     public int coin=0;
+    public bool[] isHave;
+    public int[] SceneInt;
+    public int currScene = 0;
+    public bool isNext;
 }

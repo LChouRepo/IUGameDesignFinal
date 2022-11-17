@@ -13,17 +13,15 @@ public struct CharacterMessage
 
 public class SelectCharacter : MonoBehaviour
 {
-    public  CharacterMessage[] characterMessages;
+    public CharacterMessage[] characterMessages;
     public CharacterData CharacterData;
     private Vector3[] v3;
-    public static int currCharacter=0;
+    public static int currCharacter = 0;
     public Transform Arrow;
-    private Coin coinData;
+    public Coin coinData;
     // Start is called before the first frame update
     void Start()
     {
-        coinData = (Coin)Resources.Load("Data/Coin");
-        CharacterData= (CharacterData)Resources.Load("Data/CharactersData");
         v3 = new Vector3[characterMessages.Length];
         int i = 0;
         foreach (var item in characterMessages)
@@ -34,10 +32,29 @@ public class SelectCharacter : MonoBehaviour
         }
         Arrow.position = v3[currCharacter];
         UIManager.Instance.UpdateCoinsText(coinData.coin);
-        if (!CharacterData.isHave[currCharacter])
+        if (!coinData.isHave[currCharacter])
             characterMessages[currCharacter]._Text.text = characterMessages[currCharacter].gold + "G";
         else
             characterMessages[currCharacter]._Text.text = "ready";
+        coinData.SceneInt = new int[8];
+        for (int j = 0; j < 8; j++)
+        {
+            coinData.SceneInt[j] = CreateScene();
+
+        }
+    }
+
+    private int CreateScene()
+    {
+        int range = Random.Range(1, 9);
+        foreach (var item in coinData.SceneInt)
+        {
+            if (item == range)
+            {
+                CreateScene();
+            }
+        }
+        return range;
     }
 
     // Update is called once per frame
@@ -51,7 +68,7 @@ public class SelectCharacter : MonoBehaviour
             else
                 currCharacter--;
             Arrow.position = v3[currCharacter];
-            if (!CharacterData.isHave[currCharacter])
+            if (!coinData.isHave[currCharacter])
                 characterMessages[currCharacter]._Text.text = characterMessages[currCharacter].gold + "G";
             else
                 characterMessages[currCharacter]._Text.text = "ready";
@@ -59,24 +76,24 @@ public class SelectCharacter : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
             characterMessages[currCharacter]._Text.text = "";
-            if (currCharacter == characterMessages.Length-1)
+            if (currCharacter == characterMessages.Length - 1)
                 currCharacter = 0;
             else
                 currCharacter++;
             Arrow.position = v3[currCharacter];
-            if (!CharacterData.isHave[currCharacter])
-            characterMessages[currCharacter]._Text.text = characterMessages[currCharacter].gold + "G";
+            if (!coinData.isHave[currCharacter])
+                characterMessages[currCharacter]._Text.text = characterMessages[currCharacter].gold + "G";
             else
                 characterMessages[currCharacter]._Text.text = "ready";
         }
         if (Input.GetKeyDown(KeyCode.F))
         {
-            if (!CharacterData.isHave[currCharacter])
+            if (!coinData.isHave[currCharacter])
             {
                 if (characterMessages[currCharacter].gold <= coinData.coin)
                 {
                     coinData.coin -= characterMessages[currCharacter].gold;
-                    CharacterData.isHave[currCharacter]= true;
+                    coinData.isHave[currCharacter] = true;
                     UIManager.Instance.UpdateCoinsText(coinData.coin);
                     characterMessages[currCharacter]._Text.text = "ready";
                 }
@@ -87,8 +104,13 @@ public class SelectCharacter : MonoBehaviour
             }
             else
             {
-                SceneManager.LoadScene("Level01");
+                coinData.currScene = 1;
+                SceneManager.LoadScene(coinData.SceneInt[coinData.currScene]);
             }
+        }
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
         }
 
     }
